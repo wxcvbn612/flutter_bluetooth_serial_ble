@@ -492,7 +492,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
 
 
     /// Helper wrapper class for `BluetoothConnection`
-    private class BluetoothConnectionWrapper extends BluetoothConnection {
+    private class BluetoothConnectionWrapper extends BluetoothConnectionClassic {
         private final int id;
 
         protected EventSink readSink;
@@ -532,7 +532,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
         }
 
         @Override
-        protected void onRead(byte[] buffer) {
+        public void onRead(byte[] buffer) {
             activity.runOnUiThread(() -> {
                 if (readSink != null) {
                     readSink.success(buffer);
@@ -541,7 +541,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
         }
 
         @Override
-        protected void onDisconnected(boolean byRemote) {
+        public void onDisconnected(boolean byRemote) {
             activity.runOnUiThread(() -> {
                 if (byRemote) {
                     Log.d(TAG, "onDisconnected by remote (id: " + id + ")");
