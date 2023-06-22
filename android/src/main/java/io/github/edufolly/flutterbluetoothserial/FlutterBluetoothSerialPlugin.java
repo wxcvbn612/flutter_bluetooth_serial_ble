@@ -70,7 +70,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
 
     // Connections
     /// Contains all active connections. Maps ID of the connection with plugin data channels. 
-    private final SparseArray<BluetoothConnectionWrapper> connections = new SparseArray<>(2);
+    private final SparseArray<BluetoothConnection> connections = new SparseArray<>(2);
 
     /// Last ID given to any connection, used to avoid duplicate IDs 
     private int lastConnectionId = 0;
@@ -615,7 +615,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                     break;
 
                 case "getAddress": {
-                    String address = bluetoothAdapter.getAddress();
+                    @SuppressLint({"MissingPermission", "HardwareIds"}) String address = bluetoothAdapter.getAddress();
 
                     if (address.equals("02:00:00:00:00:00")) {
                         Log.w(TAG, "Local Bluetooth MAC address is hidden by system, trying other options...");
@@ -1006,7 +1006,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                     }
 
                     int id = ++lastConnectionId;
-                    BluetoothConnectionWrapper connection = new BluetoothConnectionWrapper(id, bluetoothAdapter);
+                    BluetoothConnection connection = new BluetoothConnectionWrapper(id, bluetoothAdapter);
                     connections.put(id, connection);
 
                     Log.d(TAG, "Connecting to " + address + " (id: " + id + ")");
