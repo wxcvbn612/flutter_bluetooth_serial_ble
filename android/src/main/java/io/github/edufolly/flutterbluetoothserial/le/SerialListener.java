@@ -2,7 +2,7 @@ package io.github.edufolly.flutterbluetoothserial.le;
 
 import java.util.ArrayDeque;
 
-interface SerialListener {
+public interface SerialListener {
     void onSerialConnect      ();
     void onSerialConnectError (Exception e);
     void onSerialRead         (byte[] data);                // socket -> service

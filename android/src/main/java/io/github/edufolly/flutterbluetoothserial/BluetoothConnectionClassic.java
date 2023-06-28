@@ -5,13 +5,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
 /// Universal Bluetooth serial connection class (for Java)
-public abstract class BluetoothConnectionClassic implements BluetoothConnection
+public class BluetoothConnectionClassic extends BluetoothConnectionBase
 {
     protected static final UUID DEFAULT_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -25,7 +26,8 @@ public abstract class BluetoothConnectionClassic implements BluetoothConnection
 
 
 
-    public BluetoothConnectionClassic(BluetoothAdapter bluetoothAdapter) {
+    public BluetoothConnectionClassic(OnReadCallback onReadCallback, OnDisconnectedCallback onDisconnectedCallback, BluetoothAdapter bluetoothAdapter) {
+        super(onReadCallback, onDisconnectedCallback);
         this.bluetoothAdapter = bluetoothAdapter;
     }
 
@@ -77,11 +79,6 @@ public abstract class BluetoothConnectionClassic implements BluetoothConnection
 
         connectionThread.write(data);
     }
-
-    public abstract void onRead(byte[] data);
-
-    /// Callback for disconnection.
-    public abstract void onDisconnected(boolean byRemote);
 
     /// Thread to handle connection I/O
     private class ConnectionThread extends Thread  {

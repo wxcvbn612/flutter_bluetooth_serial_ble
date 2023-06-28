@@ -40,6 +40,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.github.edufolly.flutterbluetoothserial.le.BluetoothConnectionLE;
 
 public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAware {
     // Plugin
@@ -490,72 +491,6 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
         }
     }
 
-
-    /// Helper wrapper class for `BluetoothConnection`
-    private class BluetoothConnectionWrapper extends BluetoothConnectionClassic {
-        private final int id;
-
-        protected EventSink readSink;
-
-        protected EventChannel readChannel;
-
-        private final BluetoothConnectionWrapper self = this;
-
-        public BluetoothConnectionWrapper(int id, BluetoothAdapter adapter) {
-            super(adapter);
-            this.id = id;
-
-            readChannel = new EventChannel(messenger, PLUGIN_NAMESPACE + "/read/" + id);
-            // If canceled by local, disconnects - in other case, by remote, does nothing
-            // True dispose
-            StreamHandler readStreamHandler = new StreamHandler() {
-                @Override
-                public void onListen(Object o, EventSink eventSink) {
-                    readSink = eventSink;
-                }
-
-                @Override
-                public void onCancel(Object o) {
-                    // If canceled by local, disconnects - in other case, by remote, does nothing
-                    self.disconnect();
-
-                    // True dispose
-                    AsyncTask.execute(() -> {
-                        readChannel.setStreamHandler(null);
-                        connections.remove(id);
-
-                        Log.d(TAG, "Disconnected (id: " + id + ")");
-                    });
-                }
-            };
-            readChannel.setStreamHandler(readStreamHandler);
-        }
-
-        @Override
-        public void onRead(byte[] buffer) {
-            activity.runOnUiThread(() -> {
-                if (readSink != null) {
-                    readSink.success(buffer);
-                }
-            });
-        }
-
-        @Override
-        public void onDisconnected(boolean byRemote) {
-            activity.runOnUiThread(() -> {
-                if (byRemote) {
-                    Log.d(TAG, "onDisconnected by remote (id: " + id + ")");
-                    if (readSink != null) {
-                        readSink.endOfStream();
-                        readSink = null;
-                    }
-                } else {
-                    Log.d(TAG, "onDisconnected by local (id: " + id + ")");
-                }
-            });
-        }
-    }
-
     private class FlutterBluetoothSerialMethodCallHandler implements MethodCallHandler {
         /// Provides access to the plugin methods
         @Override
@@ -994,6 +929,8 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                         break;
                     }
 
+                    boolean isLE = call.hasArgument("isLE") && Boolean.TRUE.equals(call.<Boolean>argument("isLE"));
+
                     String address;
                     try {
                         address = call.argument("address");
@@ -1005,8 +942,73 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                         break;
                     }
 
+                    BluetoothConnection connection;
+                    BluetoothConnection[] connection0 = {null};
+
                     int id = ++lastConnectionId;
-                    BluetoothConnection connection = new BluetoothConnectionWrapper(id, bluetoothAdapter);
+
+                    EventSink[] readSink = {null};
+
+                    // I think this code is to effect disconnection when the plugin is unloaded or something?
+                    EventChannel readChannel = new EventChannel(messenger, PLUGIN_NAMESPACE + "/read/" + id);
+                    // If canceled by local, disconnects - in other case, by remote, does nothing
+                    // True dispose
+                    StreamHandler readStreamHandler = new StreamHandler() {
+                        @Override
+                        public void onListen(Object o, EventSink eventSink) {
+                            readSink[0] = eventSink;
+                        }
+
+                        @Override
+                        public void onCancel(Object o) {
+                            // If canceled by local, disconnects - in other case, by remote, does nothing
+                            connection0[0].disconnect();
+
+                            // True dispose
+                            AsyncTask.execute(() -> {
+                                readChannel.setStreamHandler(null);
+                                connections.remove(id);
+
+                                Log.d(TAG, "Disconnected (id: " + id + ")");
+                            });
+                        }
+                    };
+                    readChannel.setStreamHandler(readStreamHandler); //LEAK //THINK I don't know if this should go after the BluetoothConnection is created or not
+
+                    BluetoothConnectionBase.OnReadCallback orc = new BluetoothConnectionBase.OnReadCallback() {
+                        @Override
+                        public void onRead(byte[] data) {
+                            activity.runOnUiThread(() -> {
+                                if (readSink[0] != null) {
+                                    readSink[0].success(data);
+                                }
+                            });
+                        }
+                    };
+
+                    BluetoothConnectionBase.OnDisconnectedCallback odc = new BluetoothConnectionBase.OnDisconnectedCallback() {
+                        @Override
+                        public void onDisconnected(boolean byRemote) {
+                            activity.runOnUiThread(() -> {
+                                if (byRemote) {
+                                    Log.d(TAG, "onDisconnected by remote (id: " + id + ")");
+                                    if (readSink[0] != null) {
+                                        readSink[0].endOfStream();
+                                        readSink[0] = null;
+                                    }
+                                } else {
+                                    Log.d(TAG, "onDisconnected by local (id: " + id + ")");
+                                }
+                            });
+                        }
+                    };
+
+                    if (isLE) {
+                        connection0[0] = new BluetoothConnectionLE(orc, odc);
+                    } else {
+                        connection0[0] = new BluetoothConnectionClassic(orc, odc, bluetoothAdapter);
+                    }
+                    connection = connection0[0];
                     connections.put(id, connection);
 
                     Log.d(TAG, "Connecting to " + address + " (id: " + id + ")");

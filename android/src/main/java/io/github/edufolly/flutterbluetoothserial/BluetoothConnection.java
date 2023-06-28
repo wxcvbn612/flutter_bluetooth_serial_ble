@@ -17,4 +17,4 @@ public interface BluetoothConnection {
     public void onRead(byte[] data);
     /// Callback for disconnection.
     public void onDisconnected(boolean byRemote);
-    }
+}

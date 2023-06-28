@@ -7,12 +7,17 @@ import java.io.IOException;
 import java.util.UUID;
 
 import io.github.edufolly.flutterbluetoothserial.BluetoothConnection;
+import io.github.edufolly.flutterbluetoothserial.BluetoothConnectionBase;
 
-public abstract class BluetoothConnectionLE implements BluetoothConnection {
+public class BluetoothConnectionLE extends BluetoothConnectionBase {
     private enum Connected { False, Pending, True }
 
     private Connected connected = Connected.False;
     private SerialSocket socket;
+
+    public BluetoothConnectionLE(OnReadCallback onReadCallback, OnDisconnectedCallback onDisconnectedCallback) {
+        super(onReadCallback, onDisconnectedCallback);
+    }
 
     @Override
     public boolean isConnected() {
@@ -63,8 +68,4 @@ public abstract class BluetoothConnectionLE implements BluetoothConnection {
         }
         socket.write(data);
     }
-
-    public abstract void onRead(byte[] data);
-
-    public abstract void onDisconnected(boolean byRemote);
 }
