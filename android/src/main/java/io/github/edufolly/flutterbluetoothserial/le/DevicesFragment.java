@@ -90,8 +90,8 @@ public class DevicesFragment extends ListFragment {
                         new Handler(Looper.getMainLooper()).postDelayed(this::startScan, 1); // run after onResume to avoid wrong empty-text
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle(getText(R.string.location_permission_title));
-                        builder.setMessage(getText(R.string.location_permission_denied));
+                        builder.setTitle("location_permission_title"); //DUMMY
+                        builder.setMessage("location_permission_denied"); //DUMMY
                         builder.setPositiveButton(android.R.string.ok, null);
                         builder.show();
                     }

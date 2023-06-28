@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Map;
 
+import io.github.edufolly.flutterbluetoothserial.BuildConfig;
+
 public class BluetoothUtil {
 
     interface PermissionGrantedCallback {
@@ -69,8 +71,8 @@ public class BluetoothUtil {
      */
     private static void showRationaleDialog(Fragment fragment, DialogInterface.OnClickListener listener) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());
-        builder.setTitle(fragment.getString(R.string.bluetooth_permission_title));
-        builder.setMessage(fragment.getString(R.string.bluetooth_permission_grant));
+        builder.setTitle("bluetooth_permission_title"); //DUMMY
+        builder.setMessage("bluetooth_permission_grant"); //DUMMY
         builder.setNegativeButton("Cancel", null);
         builder.setPositiveButton("Continue", listener);
         builder.show();
@@ -79,12 +81,12 @@ public class BluetoothUtil {
     private static void showSettingsDialog(Fragment fragment) {
         String s = fragment.getResources().getString(fragment.getResources().getIdentifier("@android:string/permgrouplab_nearby_devices", null, null));
         final AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());
-        builder.setTitle(fragment.getString(R.string.bluetooth_permission_title));
-        builder.setMessage(String.format(fragment.getString(R.string.bluetooth_permission_denied), s));
+        builder.setTitle("bluetooth_permission_title");
+        builder.setMessage("bluetooth_permission_denied : " + s);
         builder.setNegativeButton("Cancel", null);
         builder.setPositiveButton("Settings", (dialog, which) ->
                 fragment.startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.parse("package:" + BuildConfig.APPLICATION_ID))));
+                        Uri.parse("package:" + BuildConfig.LIBRARY_PACKAGE_NAME)))); //DUMMY Not sure about this one
         builder.show();
     }
 
