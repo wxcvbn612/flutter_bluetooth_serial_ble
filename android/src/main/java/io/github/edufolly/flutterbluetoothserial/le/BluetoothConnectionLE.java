@@ -2,21 +2,27 @@ package io.github.edufolly.flutterbluetoothserial.le;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.UUID;
 
 import io.github.edufolly.flutterbluetoothserial.BluetoothConnection;
 import io.github.edufolly.flutterbluetoothserial.BluetoothConnectionBase;
+import io.github.edufolly.flutterbluetoothserial.BluetoothConnectionBase.OnReadCallback;
+import io.github.edufolly.flutterbluetoothserial.BluetoothConnectionBase.OnDisconnectedCallback;
 
 public class BluetoothConnectionLE extends BluetoothConnectionBase {
-    private enum Connected { False, Pending, True }
+    public enum Connected { False, Pending, True } //DUMMY IDE claiming non-accessible
 
     private Connected connected = Connected.False;
     private SerialSocket socket;
+    private Context ctx;
 
-    public BluetoothConnectionLE(OnReadCallback onReadCallback, OnDisconnectedCallback onDisconnectedCallback) {
+    public BluetoothConnectionLE(OnReadCallback onReadCallback, OnDisconnectedCallback onDisconnectedCallback, Context appCtx) {
         super(onReadCallback, onDisconnectedCallback);
+        this.ctx = appCtx;
     }
 
     @Override
@@ -37,15 +43,41 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
-            status("connecting...");
+            System.out.println("connecting...");
             connected = Connected.Pending;
-            SerialSocket socket = new SerialSocket(getActivity().getApplicationContext(), device);
+            SerialSocket socket = new SerialSocket(ctx, device);
 
-            socket.connect(this);
+            socket.connect(new io.github.edufolly.flutterbluetoothserial.le.SerialListener() {
+                @Override
+                public void onSerialConnect() {
+                    throw new RuntimeException("//DUMMY");
+                }
+
+                @Override
+                public void onSerialConnectError(Exception e) {
+                    throw new RuntimeException("//DUMMY");
+                }
+
+                @Override
+                public void onSerialRead(byte[] data) {
+                    throw new RuntimeException("//DUMMY");
+                }
+
+                @Override
+                public void onSerialRead(ArrayDeque<byte[]> datas) {
+                    throw new RuntimeException("//DUMMY");
+                }
+
+                @Override
+                public void onSerialIoError(Exception e) {
+                    throw new RuntimeException("//DUMMY");
+                }
+            });
             this.socket = socket;
             connected = Connected.True;
         } catch (Exception e) {
-            onSerialConnectError(e);
+            System.err.println("connection failed: " + e.getMessage());
+            disconnect();
         }
     }
 
@@ -53,7 +85,7 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
     public void disconnect() {
         if (isConnected()) {
             connected = Connected.False; // ignore data,errors while disconnecting
-            cancelNotification();
+            //cancelNotification(); //DUMMY
             if (socket != null) {
                 socket.disconnect();
                 socket = null;

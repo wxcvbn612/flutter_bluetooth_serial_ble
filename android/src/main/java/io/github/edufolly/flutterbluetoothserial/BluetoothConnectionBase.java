@@ -1,6 +1,6 @@
 package io.github.edufolly.flutterbluetoothserial;
 
-public abstract class BluetoothConnectionBase implements BluetoothConnection {
+public abstract class BluetoothConnectionBase implements io.github.edufolly.flutterbluetoothserial.BluetoothConnection {
     public interface OnReadCallback {
         public void onRead(byte[] data);
     }
