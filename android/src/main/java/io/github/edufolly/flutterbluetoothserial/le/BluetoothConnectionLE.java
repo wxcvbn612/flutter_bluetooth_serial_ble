@@ -7,6 +7,7 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import io.github.edufolly.flutterbluetoothserial.BluetoothConnection;
 import io.github.edufolly.flutterbluetoothserial.BluetoothConnectionBase;
@@ -47,37 +48,60 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
             connected = Connected.Pending;
             SerialSocket socket = new SerialSocket(ctx, device);
 
+            Object[] connectionResult = {null};
+            CountDownLatch done = new CountDownLatch(1);
+            //RAINY //THINK Make sure the semantics here are the same as with the classic bluetooth
             socket.connect(new io.github.edufolly.flutterbluetoothserial.le.SerialListener() {
                 @Override
                 public void onSerialConnect() {
-                    throw new RuntimeException("//DUMMY");
+                    System.out.printf("onSerialConnect");
+                    connectionResult[0] = true;
+                    done.countDown();
                 }
 
                 @Override
                 public void onSerialConnectError(Exception e) {
-                    throw new RuntimeException("//DUMMY");
+                    System.out.printf("onSerialConnectError:");
+                    e.printStackTrace();
+                    connectionResult[0] = e;
+                    done.countDown();
+                    BluetoothConnectionLE.this.onDisconnected(true); //CHECK byRemote?  Also, should this happen on initial connection attempt?
                 }
 
                 @Override
                 public void onSerialRead(byte[] data) {
-                    throw new RuntimeException("//DUMMY");
+                    BluetoothConnectionLE.this.onRead(data);
                 }
 
                 @Override
                 public void onSerialRead(ArrayDeque<byte[]> datas) {
-                    throw new RuntimeException("//DUMMY");
+                    for (byte[] data : datas) {
+                        BluetoothConnectionLE.this.onRead(data);
+                    }
                 }
 
                 @Override
                 public void onSerialIoError(Exception e) {
-                    throw new RuntimeException("//DUMMY");
+                    throw new RuntimeException("//DUMMY", e); //THINK send connection error or what?
                 }
             });
+            System.out.println("awaiting connect done...");
+            done.await(); //DUMMY Timeout?
+            System.out.println("...connect done");
+            if (connectionResult[0] instanceof Exception) {
+                System.out.println("with connect error");
+                throw (Exception)connectionResult[0];
+            }
+            System.out.println("with connect success");
             this.socket = socket;
             connected = Connected.True;
         } catch (Exception e) {
             System.err.println("connection failed: " + e.getMessage());
-            disconnect();
+            try {
+                disconnect(); //THINK Is this correct still?
+            } finally {
+                throw new IOException(e);
+            }
         }
     }
 

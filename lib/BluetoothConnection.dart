@@ -56,11 +56,28 @@ class BluetoothConnection {
   }
 
   /// Returns connection to given address.
-  static Future<BluetoothConnection> toAddress(String? address) async {
+  static Future<BluetoothConnection> toAddress(String? address) async { //DUMMY //THINK Expose bc/ble?
+    try {
+      return await toAddressBC(address);
+    } catch (e, s) {
+      // Bluetooth classic failed; try BLE
+      return toAddressBLE(address);
+    }
+  }
+
+  static Future<BluetoothConnection> toAddressBLE(String? address) async {
     // Sorry for pseudo-factory, but `factory` keyword disallows `Future`.
     return BluetoothConnection._consumeConnectionID(await FlutterBluetoothSerial
         ._methodChannel
-        .invokeMethod('connect', {"address": address}));
+        .invokeMethod('connect', {"address": address, "isLE": true}));
+
+  }
+
+  static Future<BluetoothConnection> toAddressBC(String? address) async {
+    // Sorry for pseudo-factory, but `factory` keyword disallows `Future`.
+    return BluetoothConnection._consumeConnectionID(await FlutterBluetoothSerial
+        ._methodChannel
+        .invokeMethod('connect', {"address": address, "isLE": false}));
   }
 
   /// Should be called to make sure the connection is closed and resources are freed (sockets/channels).
