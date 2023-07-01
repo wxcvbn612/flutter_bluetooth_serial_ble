@@ -3,7 +3,7 @@
 
 [![pub package](https://img.shields.io/pub/v/flutter_bluetooth_serial.svg)](https://pub.dartlang.org/packages/flutter_bluetooth_serial_ble)
 
-Flutter basic implementation for Classical Bluetooth (only RFCOMM for now), and now also BLE.  I hacked out parts of [SimpleBluetoothLeTerminal](https://github.com/kai-morich/SimpleBluetoothLeTerminal) and glued them to [flutter_bluetooth_serial](https://github.com/edufolly/flutter_bluetooth_serial) and now `BluetoothConnection.toAddress` accepts a second parameter, `type`, defaulting to `AUTO`, giving the behavior of trying to connect with the usual BT Classic mechanism first, then switching to BLE if that fails.  It should work out of the box.  Hasn't been tested very rigorously yet, sorry.
+Flutter basic implementation for Classical Bluetooth (only RFCOMM for now), and now also BLE.  I hacked out parts of [SimpleBluetoothLeTerminal](https://github.com/kai-morich/SimpleBluetoothLeTerminal) and glued them to [flutter_bluetooth_serial](https://github.com/edufolly/flutter_bluetooth_serial) and now `BluetoothConnection.toAddress` accepts a second parameter, `type`, defaulting to `AUTO`, giving the behavior of trying to connect with the usual BT Classic mechanism first, then switching to BLE if that fails.  (Note this makes the default behavior slow to connect to a BLE device.)  It should work out of the box.  Hasn't been tested very rigorously yet, sorry.  I do note that BLE connection fails the first time I try after installing the app, and is fine after that - probably some permissions thing in the wrong place.  Check permissions if you have trouble.
 
 
 ## Features
