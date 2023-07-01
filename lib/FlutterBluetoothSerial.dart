@@ -1,8 +1,8 @@
-part of flutter_bluetooth_serial;
+part of flutter_bluetooth_serial_ble;
 
 class FlutterBluetoothSerial {
   // Plugin
-  static const String namespace = 'flutter_bluetooth_serial';
+  static const String namespace = 'flutter_bluetooth_serial_ble';
 
   static FlutterBluetoothSerial _instance = new FlutterBluetoothSerial._();
 
@@ -258,8 +258,8 @@ class FlutterBluetoothSerial {
       connectToAddress(device.address);
 
   @Deprecated('Use `BluetoothConnection.toAddress(address)` instead')
-  Future<void> connectToAddress(String? address) => Future(() async {
-        _defaultConnection = await BluetoothConnection.toAddress(address);
+  Future<void> connectToAddress(String? address, {ConnectionType type = ConnectionType.AUTO}) => Future(() async {
+        _defaultConnection = await BluetoothConnection.toAddress(address, type: type);
       });
 
   @Deprecated(

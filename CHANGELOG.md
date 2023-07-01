@@ -1,3 +1,7 @@
+## [0.5.0] - 2023-07-01
+
+Glued in BLE support from https://github.com/kai-morich/SimpleBluetoothLeTerminal
+
 ## [0.4.0] - 2021-08-17
 
 Update flutter plugin v2.

@@ -1,4 +1,4 @@
-library flutter_bluetooth_serial;
+library flutter_bluetooth_serial_ble;
 
 import 'dart:async';
 import 'dart:typed_data';
