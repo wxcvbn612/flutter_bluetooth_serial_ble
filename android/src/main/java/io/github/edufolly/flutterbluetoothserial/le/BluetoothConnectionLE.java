@@ -44,7 +44,7 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
-            System.out.println("connecting...");
+            //System.out.println("connecting...");
             connected = Connected.Pending;
             SerialSocket socket = new SerialSocket(ctx, device);
 
@@ -54,14 +54,14 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
             socket.connect(new io.github.edufolly.flutterbluetoothserial.le.SerialListener() {
                 @Override
                 public void onSerialConnect() {
-                    System.out.printf("onSerialConnect");
+                    //System.out.println("onSerialConnect");
                     connectionResult[0] = true;
                     done.countDown();
                 }
 
                 @Override
                 public void onSerialConnectError(Exception e) {
-                    System.out.printf("onSerialConnectError:");
+                    //System.out.println("onSerialConnectError:");
                     e.printStackTrace();
                     connectionResult[0] = e;
                     done.countDown();
@@ -85,18 +85,18 @@ public class BluetoothConnectionLE extends BluetoothConnectionBase {
                     throw new RuntimeException("//DUMMY", e); //THINK send connection error or what?
                 }
             });
-            System.out.println("awaiting connect done...");
+            //System.out.println("awaiting connect done...");
             done.await(); //DUMMY Timeout?
-            System.out.println("...connect done");
+            //System.out.println("...connect done");
             if (connectionResult[0] instanceof Exception) {
-                System.out.println("with connect error");
+                //System.out.println("with connect error");
                 throw (Exception)connectionResult[0];
             }
-            System.out.println("with connect success");
+            //System.out.println("with connect success");
             this.socket = socket;
             connected = Connected.True;
         } catch (Exception e) {
-            System.err.println("connection failed: " + e.getMessage());
+            //System.err.println("connection failed: " + e.getMessage());
             try {
                 disconnect(); //THINK Is this correct still?
             } finally {
