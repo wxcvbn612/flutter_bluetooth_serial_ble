@@ -1,4 +1,4 @@
-part of flutter_bluetooth_serial;
+part of flutter_bluetooth_serial_ble;
 
 /// Represents information about the device. Could be out-of-date. // @TODO . add updating the info via some fn
 class BluetoothDevice {

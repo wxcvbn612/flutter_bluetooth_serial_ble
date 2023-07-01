@@ -1,9 +1,9 @@
 
-# `flutter_bluetooth_serial`
+# `flutter_bluetooth_serial_ble`
 
-[![pub package](https://img.shields.io/pub/v/flutter_bluetooth_serial.svg)](https://pub.dartlang.org/packages/flutter_bluetooth_serial_ble)
+[![pub package](https://img.shields.io/pub/v/flutter_bluetooth_serial_ble.svg)](https://pub.dartlang.org/packages/flutter_bluetooth_serial_ble)
 
-Flutter basic implementation for Classical Bluetooth (only RFCOMM for now), and now also BLE.  I hacked out parts of [SimpleBluetoothLeTerminal](https://github.com/kai-morich/SimpleBluetoothLeTerminal) and glued them to [flutter_bluetooth_serial](https://github.com/edufolly/flutter_bluetooth_serial) and now `BluetoothConnection.toAddress` accepts a second parameter, `type`, defaulting to `AUTO`, giving the behavior of trying to connect with the usual BT Classic mechanism first, then switching to BLE if that fails.  (Note this makes the default behavior slow to connect to a BLE device.)  It should work out of the box.  Hasn't been tested very rigorously yet, sorry.  I do note that BLE connection fails the first time I try after installing the app, and is fine after that - probably some permissions thing in the wrong place.  Check permissions if you have trouble.
+Flutter basic implementation for Classical Bluetooth (only RFCOMM for now), and now also BLE.  I hacked out parts of [SimpleBluetoothLeTerminal](https://github.com/kai-morich/SimpleBluetoothLeTerminal) and glued them to [flutter_bluetooth_serial](https://github.com/edufolly/flutter_bluetooth_serial) and now `BluetoothConnection.toAddress` accepts a second parameter, `type`, defaulting to `AUTO`, giving the behavior of trying to connect with the usual BT Classic mechanism first, then switching to BLE if that fails.  (Note this makes the default behavior slow to connect to a BLE device.)  It should work out of the box, a drop-in replacement of the previous version, aside from the addition of two "_ble"s to the imports.  Hasn't been tested very rigorously yet, sorry.  I do note that BLE connection fails the first time I try after installing the app, and is fine after that - probably some permissions thing in the wrong place.  Check permissions if you have trouble.
 
 
 ## Features
@@ -36,7 +36,7 @@ For now there is only Android support.
 # Add dependency to `pubspec.yaml` of your project.
 dependencies:
     # ...
-    flutter_bluetooth_serial: ^0.3.2
+    flutter_bluetooth_serial_ble: ^0.5.0
 ```
 
 #### Installing
@@ -50,7 +50,7 @@ flutter pub get
 
 #### Importing
 ```dart
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_serial_ble/flutter_bluetooth_serial_ble.dart';
 ```
 
 #### Usage
@@ -106,6 +106,7 @@ You might also want to check [milestones](https://github.com/edufolly/flutter_bl
 - [Eduardo Folly](mailto:edufolly@gmail.com)
 - [Martin Mauch](mailto:martin.mauch@gmail.com)
 - [Patryk Ludwikowski](mailto:patryk.ludwikowski.7@gmail.com)
+- https://github.com/kai-morich/SimpleBluetoothLeTerminal for BLE code
 
 After version 0.3.0 we have a lot of collaborators. If you would like to be credited, please send me an [email](mailto:edufolly@gmail.com).
 

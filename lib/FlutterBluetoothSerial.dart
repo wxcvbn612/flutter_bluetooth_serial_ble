@@ -1,8 +1,8 @@
-part of flutter_bluetooth_serial;
+part of flutter_bluetooth_serial_ble;
 
 class FlutterBluetoothSerial {
   // Plugin
-  static const String namespace = 'flutter_bluetooth_serial';
+  static const String namespace = 'flutter_bluetooth_serial_ble';
 
   static FlutterBluetoothSerial _instance = new FlutterBluetoothSerial._();
 

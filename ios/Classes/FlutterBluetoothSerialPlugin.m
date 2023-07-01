@@ -3,7 +3,7 @@
 @implementation FlutterBluetoothSerialPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_bluetooth_serial"
+      methodChannelWithName:@"flutter_bluetooth_serial_ble"
             binaryMessenger:[registrar messenger]];
   FlutterBluetoothSerialPlugin* instance = [[FlutterBluetoothSerialPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

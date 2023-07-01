@@ -45,7 +45,7 @@ import io.github.edufolly.flutterbluetoothserial.le.BluetoothConnectionLE;
 public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAware {
     // Plugin
     private static final String TAG = "FlutterBluePlugin";
-    private static final String PLUGIN_NAMESPACE = "flutter_bluetooth_serial";
+    private static final String PLUGIN_NAMESPACE = "flutter_bluetooth_serial_ble";
     private MethodChannel methodChannel;
     private Result pendingResultForActivityResult = null;
 
