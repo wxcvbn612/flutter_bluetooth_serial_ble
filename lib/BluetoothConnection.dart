@@ -1,5 +1,14 @@
 part of flutter_bluetooth_serial;
 
+enum ConnectionType {
+  CLASSIC,
+  BLE,
+  /// Try BT classic, then on failure try BLE
+  AUTO,
+  /// Try BLE, then on failure try BT classic
+  AUTO_BUT_TRY_BLE_FIRST
+}
+
 /// Represents ongoing Bluetooth connection to remote device.
 class BluetoothConnection {
   // Note by PsychoX at 2019-08-19 while working on issue #60:
@@ -56,12 +65,26 @@ class BluetoothConnection {
   }
 
   /// Returns connection to given address.
-  static Future<BluetoothConnection> toAddress(String? address) async { //DUMMY //THINK Expose bc/ble?
-    try {
-      return await toAddressBC(address);
-    } catch (e, s) {
-      // Bluetooth classic failed; try BLE
-      return toAddressBLE(address);
+  static Future<BluetoothConnection> toAddress(String? address, {ConnectionType type = ConnectionType.AUTO}) async { //DUMMY //THINK Expose bc/ble?
+    switch (type) {
+      case ConnectionType.AUTO:
+        try {
+          return await toAddressBC(address);
+        } catch (e, s) {
+          // Bluetooth classic failed; try BLE
+          return toAddressBLE(address);
+        }
+      case ConnectionType.AUTO_BUT_TRY_BLE_FIRST:
+        try {
+          return await toAddressBLE(address);
+        } catch (e, s) {
+          // BLE failed; try bluetooth classic
+          return toAddressBC(address);
+        }
+      case ConnectionType.CLASSIC:
+        return toAddressBC(address);
+      case ConnectionType.BLE:
+        return toAddressBLE(address);
     }
   }
 
