@@ -55,7 +55,17 @@ public class BluetoothConnectionClassic extends BluetoothConnectionBase
         // Cancel discovery, even though we didn't start it
         bluetoothAdapter.cancelDiscovery();
 
-        socket.connect();
+        try {
+            socket.connect();
+        } catch (IOException e) {
+            try {
+                // Newer versions of android may require voodoo; see https://stackoverflow.com/a/25647197
+                socket = (BluetoothSocket) device.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(device,1);
+                socket.connect();
+            } catch (Exception e2) {
+                throw new IOException("Failed to connect", e2);
+            }
+        }
 
         connectionThread = new ConnectionThread(socket);
         connectionThread.start();
